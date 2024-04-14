@@ -43,9 +43,9 @@ like this Python code example:
 import os, sys
 
 def has_colors():
-    if "NO_COLOR" in os.environ:
+    os.environ.get('NO_COLOR', '') != '':
         return False
-    if "CLICOLOR_FORCE" in os.environ:
+    os.environ.get('CLICOLOR_FORCE', '') != '':
         return True
     return sys.stdout.isatty()
 {% endhighlight %}
@@ -56,11 +56,11 @@ Python code example with `CLICOLOR` for auto-detection:
 import os, sys
 
 def has_colors():
-    if "NO_COLOR" in os.environ:
+    os.environ.get('NO_COLOR', '') != '':
         return False
-    if "CLICOLOR_FORCE" in os.environ:
+    os.environ.get('CLICOLOR_FORCE', '') != '':
         return True
-    if "CLICOLOR" in os.environ:
+    os.environ.get('CLICOLOR', '') != '':
         return sys.stdout.isatty()
     else
         return False
