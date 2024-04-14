@@ -14,17 +14,21 @@ Windows, or need to be passed a parameter like `--color`, `--ansi` or
 That's why this page tries to create some sort of "standard" which programs
 should comply to no matter on which platform they are run.
 
-The idea is to have the environment variables `NO_COLOR` and `CLICOLOR_FORCE` (which are currently
-already used for this exact reason on some UNIX systems). When set, the following rules
-should apply:
+The idea is to have the environment variables `NO_COLOR`, `CLICOLOR_FORCE`, and `CLICOLOR`
+(which are currently already used for this exact reason on some UNIX systems).
+When set, the following rules should apply:
 
  * `NO_COLOR` set
    * Don't output ANSI color escape codes, see [no-color.org](https://no-color.org)
  * `CLICOLOR_FORCE` set, but `NO_COLOR` unset
-   * ANSI colors should be enabled no matter what.
- * none of the above environment variables are set
+   * ANSI colors should be enabled no matter what
+ * `CLICOLOR` set, `NO_COLOR` and `CLICOLOR_FORCE` unset
    * ANSI colors are supported and should be used when the program is writing to a
-     terminal.
+     terminal
+ * none of the above environment variables are set
+   * ANSI colors are not explicitly requested
+   * Older programs newly gaining colors may prefer to disable them by default
+   * New programs may prefer to operate as if `CLICOLOR` is set
 
 If you have ideas or comments please
 [create a new issue on GitHub](https://github.com/jhasse/clicolors/issues/new)
@@ -45,6 +49,27 @@ def has_colors():
         return True
     return sys.stdout.isatty()
 {% endhighlight %}
+
+Python code example with `CLICOLOR` for auto-detection:
+
+{% highlight python %}
+import os, sys
+
+def has_colors():
+    if "NO_COLOR" in os.environ:
+        return False
+    if "CLICOLOR_FORCE" in os.environ:
+        return True
+    if "CLICOLOR" in os.environ:
+        return sys.stdout.isatty()
+    else
+        return False
+{% endhighlight %}
+
+Also consider letting the user override these with command-line options like `--color` and `--color=WHEN` where `WHEN` would be one of:
+* `--color` or `--color=always` or `--color=on`: like `CLICOLOR_FORCE`
+* `--color=never` or `--color=no`: like `NO_COLOR`, a good default for software newly gaining colors
+* `--color=auto`: like `CLICOLOR`, a good default for newer software
 
 ## Supported Colors
 
